@@ -1,1 +1,52 @@
--- Users Table\nCREATE TABLE users (\n    id INT AUTO_INCREMENT PRIMARY KEY,\n    username VARCHAR(50) NOT NULL UNIQUE,\n    password_hash VARCHAR(255) NOT NULL,\n    email VARCHAR(100) NOT NULL UNIQUE,\n    role ENUM('job_seeker', 'employer') NOT NULL,\n    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP\n);\n\n-- Courses Table\nCREATE TABLE courses (\n    id INT AUTO_INCREMENT PRIMARY KEY,\n    title VARCHAR(100) NOT NULL,\n    description TEXT,\n    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP\n);\n\n-- Enrollments Table\nCREATE TABLE enrollments (\n    id INT AUTO_INCREMENT PRIMARY KEY,\n    user_id INT NOT NULL,\n    course_id INT NOT NULL,\n    enrollment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,\n    FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE,\n    UNIQUE (user_id, course_id)\n);\n\n-- Lessons Table\nCREATE TABLE lessons (\n    id INT AUTO_INCREMENT PRIMARY KEY,\n    course_id INT NOT NULL,\n    title VARCHAR(100) NOT NULL,\n    content TEXT,\n    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n    FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE\n);\n\n-- Jobs Table\nCREATE TABLE jobs (\n    id INT AUTO_INCREMENT PRIMARY KEY,\n    employer_id INT NOT NULL,\n    title VARCHAR(100) NOT NULL,\n    description TEXT,\n    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n    FOREIGN KEY (employer_id) REFERENCES users(id) ON DELETE CASCADE\n);\n\n-- Applications Table\nCREATE TABLE applications (\n    id INT AUTO_INCREMENT PRIMARY KEY,\n    job_id INT NOT NULL,\n    job_seeker_id INT NOT NULL,\n    application_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n    status ENUM('applied', 'interview', 'rejected', 'accepted') DEFAULT 'applied',\n    FOREIGN KEY (job_id) REFERENCES jobs(id) ON DELETE CASCADE,\n    FOREIGN KEY (job_seeker_id) REFERENCES users(id) ON DELETE CASCADE\n);\n\n-- Employer Profiles Table\nCREATE TABLE employer_profiles (\n    id INT AUTO_INCREMENT PRIMARY KEY,\n    employer_id INT NOT NULL,\n    company_name VARCHAR(100) NOT NULL,\n    website VARCHAR(100),\n    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n    FOREIGN KEY (employer_id) REFERENCES users(id) ON DELETE CASCADE\n);\n\n-- Job Seeker Profiles Table\nCREATE TABLE job_seeker_profiles (\n    id INT AUTO_INCREMENT PRIMARY KEY,\n    job_seeker_id INT NOT NULL,\n    resume TEXT,\n    skills TEXT,\n    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n    FOREIGN KEY (job_seeker_id) REFERENCES users(id) ON DELETE CASCADE\n);\n\n-- Interview Schedules Table\nCREATE TABLE interview_schedules (\n    id INT AUTO_INCREMENT PRIMARY KEY,\n    application_id INT NOT NULL,\n    interview_date DATETIME NOT NULL,\n    location VARCHAR(100),\n    FOREIGN KEY (application_id) REFERENCES applications(id) ON DELETE CASCADE\n);\n\n-- Job Offers Table\nCREATE TABLE job_offers (\n    id INT AUTO_INCREMENT PRIMARY KEY,\n    application_id INT NOT NULL,\n    offer_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n    salary DECIMAL(10, 2),\n    FOREIGN KEY (application_id) REFERENCES applications(id) ON DELETE CASCADE\n);\n\n-- Transactions Table\nCREATE TABLE transactions (\n    id INT AUTO_INCREMENT PRIMARY KEY,\n    user_id INT NOT NULL,\n    amount DECIMAL(10, 2) NOT NULL,\n    transaction_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE\n);
+-- Database schema for Learning and Jobs modules
+
+-- Learning Module Schema
+CREATE TABLE Courses (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE Enrollments (
+    id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES Users(id),
+    course_id INT REFERENCES Courses(id),
+    enrolled_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(user_id, course_id)
+);
+
+CREATE TABLE LearningMaterials (
+    id SERIAL PRIMARY KEY,
+    course_id INT REFERENCES Courses(id),
+    material_type VARCHAR(50),
+    url TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Jobs Module Schema
+CREATE TABLE Jobs (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    company VARCHAR(255),
+    location VARCHAR(255),
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE Applications (
+    id SERIAL PRIMARY KEY,
+    job_id INT REFERENCES Jobs(id),
+    user_id INT REFERENCES Users(id),
+    applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(job_id, user_id)
+);
+
+CREATE TABLE JobSkills (
+    id SERIAL PRIMARY KEY,
+    job_id INT REFERENCES Jobs(id),
+    skill VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
