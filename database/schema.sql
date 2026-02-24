@@ -1,0 +1,59 @@
+-- Users Table
+CREATE TABLE Users (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Courses Table
+CREATE TABLE Courses (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(100) NOT NULL,
+    description TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Enrollments Table
+CREATE TABLE Enrollments (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+    course_id INT NOT NULL,
+    enrollment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE,
+    FOREIGN KEY (course_id) REFERENCES Courses(id) ON DELETE CASCADE
+);
+
+-- Jobs Table
+CREATE TABLE Jobs (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(100) NOT NULL,
+    description TEXT NOT NULL,
+    company VARCHAR(100) NOT NULL,
+    location VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Applications Table
+CREATE TABLE Applications (
+    id SERIAL PRIMARY KEY,
+    job_id INT NOT NULL,
+    user_id INT NOT NULL,
+    application_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status VARCHAR(50) DEFAULT 'Pending',
+    FOREIGN KEY (job_id) REFERENCES Jobs(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE
+);
+
+-- Payment Table
+CREATE TABLE Payments (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+    amount DECIMAL(10, 2) NOT NULL,
+    payment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE
+);
