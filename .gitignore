@@ -1,0 +1,11 @@
+# Node.js
+node_modules/
+.npm/
+package-lock.json
+
+# PHP
+/vendor/
+.env
+*.log
+*.cache
+.DS_Store
